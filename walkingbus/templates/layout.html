@@ -8,11 +8,31 @@
   {% block favicon %}
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
   {% endblock favicon %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
   {% block style %}
-    
   {% endblock style %}
 </head>
 <body>
-  
+  <header class="header">
+    <ul class="nav-left">
+      <li><a href="/">Home</a></li>
+      <li><a href="">GitHub</a></li>
+    </ul>
+    <ul class="nav-right">
+      <li><a href="/login">Sign in</a></li>
+    </ul>
+  </header>
+  <main role="main">
+    <div class="container">
+      {% block main %}
+      {% endblock main %}
+    </div>
+  </main>
+  <footer class="footer">
+
+  </footer>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block script %}
+  {% endblock script %}
 </body>
 </html>

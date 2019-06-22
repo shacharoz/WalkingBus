@@ -57,8 +57,4 @@ login_manager = LoginManager(app)
 bcrypt = Bcrypt(app)
 
 from .models import Parent, Child, School, Group
-
-
-@app.route('/')
-def index():
-    return render_template('index.html')
+from .views import *
