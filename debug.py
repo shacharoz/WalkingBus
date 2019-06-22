@@ -1,5 +1,4 @@
-from walkingbus.app import create_app
+from walkingbus import app
 
 
-app = create_app()
 app.run(debug=True, port=80)
