@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>{% block title %}{% if title %}{{ title }}{% else %}WalkingBus | Home{% endif %}{% endblock title %}</title>
+  {% block favicon %}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+  {% endblock favicon %}
+  {% block style %}
+    
+  {% endblock style %}
+</head>
+<body>
+  
+</body>
+</html>
