@@ -1,5 +1,4 @@
 from . import app
-from .models import Parent
 
 from flask import render_template
 
