@@ -17,11 +17,21 @@ hr {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+.text-center {
+  text-align: center !important;
+}
+
+.align-left {
+  float: left;
+}
+
+.align-right {
+  float: right;
+}
+
 .header {
   height: 4rem;
   background-color: #343a40;
-  display: grid;
-  grid-template-columns: auto auto;
   color: #fff;
   font-weight: 500;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
@@ -54,10 +64,19 @@ hr {
   list-style: none;
   display: flex;
   flex-direction: row;
-  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .header .nav-right li {
-  text-align: right;
+  margin-right: 1.6rem;
   margin-top: 1.2rem;
+}
+
+.container-primary {
+  display: block;
+  max-width: 50rem;
+  width: 80%;
+  text-align: center;
+  margin: auto;
+  margin-top: 2rem;
 }
