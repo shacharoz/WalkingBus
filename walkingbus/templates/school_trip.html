@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block main %}
+    <h1>good morning {{ user.username }}</h1>
+    <hr>
+    
+    {% if user == group.trips[-1].walker %}
+        {% if __progress == group.trips[-1].progress00  %}
+    
+    <p>
+        You are walking the kids to school today for group {{ group.name }} at school {{ group.school.name }}.
+    </p>
+    <button class="btn btn-primary" onclick="start()">PRONTO</button>
+    
+        {% if __progress == group.trips[-1].progress01  %}
+        <p>
+            You are walking the kids to school today for group {{ group.name }} at school {{ group.school.name }}.
+        </p>
+        <button class="btn btn-primary" onclick="start()">PRONTO</button>
+        
+
+    {% else %}<!-- user is a parent -->
+    <p>
+        You are waiting for the walker to wake up for group {{ group.name }} at school {{ group.school.name }}.
+    </p>
+    {% endif %}
+
+
+
+
+{% endblock main %}
+{% block script %}
+<script>
+function start() {
+    // send start to the server
+    // change screen to allow parents to enter kids to the walk
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        JSON.parse(xhr.responseText)
+    }
+    xhr.open('POST', '/start');
+    xhr.send();
+}
+</script>
+{% endblock script %}

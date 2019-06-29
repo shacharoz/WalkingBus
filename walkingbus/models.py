@@ -49,11 +49,25 @@ class Child(User, Model):
 
 class School(Model):
     id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
     address = Column(String, nullable=False, unique=True)
 
 
 class Group(Model):
+
     id = Column(Integer, primary_key=True)
     school = Column(Integer, ForeignKey('school.id'), nullable=False)
     name = Column(String, nullable=False, unique=False)
+    trips = relationship('trip.id', backref='group')
     owner = Column(Integer, ForeignKey('parent.id'), nullable=False)
+
+    def start_trip(self):
+        self.trips.append(Trip(walker=Parent.query.first()))
+
+
+class Trip(Model):
+
+    id = Column(Integer, primary_key=True)
+    walker = Column(Integer, ForeignKey('parent.id'), nullable=False)
+    timestamp = Column(DateTime, nullable=False, default=datetime.utcnow)
+    progress = 0
