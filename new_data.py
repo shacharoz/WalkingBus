@@ -18,7 +18,7 @@ school1 = School(name='Galvani', address='Some street with a school')
 db.session.add(school1)
 db.session.commit()
 
-group1 = Group(school=school1.id, name='Group #1', owner=parent3.id)
+group1 = Group(school=school1, name='Group #1', owner=parent3.id)
 db.session.add(group1)
 db.session.commit()
 
@@ -29,3 +29,5 @@ child1.groups.append(group1)
 
 db.session.add(child1)
 db.session.commit()
+
+group1.new_trip(walker=parent1)

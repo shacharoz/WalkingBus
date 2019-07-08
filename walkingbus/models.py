@@ -31,14 +31,15 @@ group_assoc = Table(
 )
 
 #
-child_trip_assoc = Table(
-    'child_trip_assoc',
+trip_assoc = Table(
+    'trip_assoc',
     Column('child_id', Integer, ForeignKey('child.id')),
     Column('trip_id', Integer, ForeignKey('trip.id')),
 )
 
 
 class Progress(IntEnum):
+
     AWAITING_WALKER = 0
     AWAITING_PARENT_CONFIMATION = 1
     WALK_STARTED = 2
@@ -54,7 +55,9 @@ class User(object):
 
 
 class Parent(User, Model):
+
     address = Column(String, nullable=False)
+    trip = relationship('Trip', uselist=False, backref='walker')
 
 
 class Child(User, Model):
@@ -68,18 +71,19 @@ class School(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     address = Column(String, nullable=False, unique=True)
+    groups = relationship('Group', backref='school')
 
 
 class Group(Model):
 
     id = Column(Integer, primary_key=True)
-    school = Column(Integer, ForeignKey('school.id'), nullable=False)
+    school_id = Column(Integer, ForeignKey('school.id'), nullable=False)
     name = Column(String, nullable=False, unique=False)
     trips = relationship('Trip', backref='group')
     owner = Column(Integer, ForeignKey('parent.id'), nullable=False)
 
     def new_trip(self, **kwargs):
-        self.current_trip = Trip(**kwargs)
+        self.current_trip = Trip(**kwargs, group=self)
         self.trips.append(self.current_trip)  # Saving the current trip to trip history
         db.session.commit()  # Forcing commit to write to database
 
@@ -88,10 +92,10 @@ class Trip(Model):
 
     # Values written to database
     id = Column(Integer, primary_key=True)
-    walker = Column(Integer, ForeignKey('parent.id'), nullable=False)
     start_time = Column(DateTime, nullable=True)
     group_id = Column(Integer, ForeignKey('group.id'), nullable=False)
-    participants = relationship('Child', secondary=child_trip_assoc, backref=backref('trips', lazy='dynamic'))
+    participants = relationship('Child', secondary=trip_assoc, backref=backref('trips', lazy='dynamic'))
+    walker_id = Column(Integer, ForeignKey('parent.id'), nullable=False)
 
     # not a database column: won't be saved permanently.
     progress = Progress.AWAITING_WALKER

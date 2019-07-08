@@ -14,12 +14,12 @@ def index():
 def school_trip():
     group = Group.query.first()
     user = Parent.query.first()
-    children = Child.query.filter(Child.parents.contains(user) and Child.groups.contains(group)).all()
+    children = Child.query.filter(Child.parents.contains(user), Child.groups.contains(group)).all()
     # TODO: not final version, this is just a temporary workaround.
     # we should call 'Group.new_trip()' when a parent volunteers to be walker.
     if (not getattr(group, 'current_trip', None) or 
        getattr(group, 'current_trip', None).progress == Progress.WALK_FINISHED):
-        group.new_trip(walker=user)
+        group.new_trip(walker_id=Parent.query.filter_by(id=2).first().id)
     return render_template('school_trip.html', user=user, group=group, Progress=Progress, children=children)
 
 
