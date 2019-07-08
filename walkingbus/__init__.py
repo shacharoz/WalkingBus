@@ -56,5 +56,5 @@ db = SQLAlchemy(app, model_class=ModelMixin)
 login_manager = LoginManager(app)
 bcrypt = Bcrypt(app)
 
-from .models import Parent, Child, School, Group
+from .models import *
 from .views import *
