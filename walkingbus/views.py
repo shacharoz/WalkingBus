@@ -1,13 +1,8 @@
 from datetime import datetime
 
-from . import app, Parent, Group
+from . import app, db, Child, Parent, Group, Progress
 
 from flask import render_template, jsonify
-
-PROGRESS_AWAITING_WALKER = 0
-PROGRESS_AWAITING_PARENT_CONFIMATION = 1
-PROGRESS_WALKING_STARTED = 2
-PROGRESS_WALK_FINISHED = 3
 
 
 @app.route('/')
@@ -18,9 +13,14 @@ def index():
 @app.route('/school-trip')
 def school_trip():
     group = Group.query.first()
-    
-    #group.start_trip()
-    return render_template('school_trip.html', user=Parent.query.first(), group=group)
+    user = Parent.query.first()
+    children = Child.query.filter(Child.parents.contains(user) and Child.groups.contains(group)).all()
+    # TODO: not final version, this is just a temporary workaround.
+    # we should call 'Group.new_trip()' when a parent volunteers to be walker.
+    if (not getattr(group, 'current_trip', None) or 
+       getattr(group, 'current_trip', None).progress == Progress.WALK_FINISHED):
+        group.new_trip(walker=user)
+    return render_template('school_trip.html', user=user, group=group, Progress=Progress, children=children)
 
 
 @app.route('/start')
