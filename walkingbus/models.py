@@ -38,7 +38,7 @@ trip_assoc = Table(
 )
 
 
-class Progress(IntEnum):
+class Progress(object):
 
     AWAITING_WALKER = 0
     AWAITING_PARENT_CONFIMATION = 1
@@ -83,9 +83,12 @@ class Group(Model):
     owner = Column(Integer, ForeignKey('parent.id'), nullable=False)
 
     def new_trip(self, **kwargs):
-        self.current_trip = Trip(**kwargs, group=self)
-        self.trips.append(self.current_trip)  # Saving the current trip to trip history
+        current_trip = Trip(**kwargs, group=self)
+        db.session.add(current_trip)  # Saving the current trip to trip history
         db.session.commit()  # Forcing commit to write to database
+    
+    def current_trip(self):
+        return self.trips[-1] if len(self.trips) > 0 else None
 
 
 class Trip(Model):
@@ -96,10 +99,9 @@ class Trip(Model):
     group_id = Column(Integer, ForeignKey('group.id'), nullable=False)
     participants = relationship('Child', secondary=trip_assoc, backref=backref('trips', lazy='dynamic'))
     walker_id = Column(Integer, ForeignKey('parent.id'), nullable=False)
-
-    # not a database column: won't be saved permanently.
-    progress = Progress.AWAITING_WALKER
+    progress = Column(Integer, nullable=False, default=Progress.AWAITING_WALKER)
 
     def start(self):
         self.start_time = datetime.utcnow()
         self.progress = Progress.AWAITING_PARENT_CONFIMATION
+        db.session.commit()
