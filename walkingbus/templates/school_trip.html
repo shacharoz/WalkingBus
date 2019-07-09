@@ -8,7 +8,10 @@
                 <p class="text-muted lead">
                     You are WALKING the kids today for group {{ group.name }} to school {{ group.school.name }}.
                 </p> 
-                <button onclick="">READY</button>
+                <form method="post">
+                    <input type="hidden" name="start" value="true">
+                    <input class="btn btn-success" type="submit" value="READY!">
+                </form>
                 <p class="text-muted lead">
                     Notify parents when you are ready.
                 </p>

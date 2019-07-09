@@ -2,7 +2,7 @@ from datetime import datetime
 
 from . import app, db, Child, Parent, Group, Progress
 
-from flask import render_template, jsonify
+from flask import render_template, request, jsonify
 
 
 @app.route('/')
@@ -10,7 +10,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/school-trip')
+@app.route('/school-trip', methods=['GET', 'POST'])
 def school_trip():
     group = Group.query.first()
     user = Parent.query.first()
@@ -19,10 +19,9 @@ def school_trip():
     # we should call 'Group.new_trip()' when a parent volunteers to be walker.
     if (not getattr(group, 'current_trip', None) or 
        getattr(group, 'current_trip', None).progress == Progress.WALK_FINISHED):
-        group.new_trip(walker_id=Parent.query.filter_by(id=2).first().id)
+        group.new_trip(walker_id=user.id)
+
+    if request.method == 'POST':
+        if request.form.get('start', False):
+            group.current_trip.start()
     return render_template('school_trip.html', user=user, group=group, Progress=Progress, children=children)
-
-
-@app.route('/start')
-def start():
-    return jsonify({ 'success': True })
