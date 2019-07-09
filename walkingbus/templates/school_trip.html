@@ -24,7 +24,7 @@
                 </p>
             {% endif %}
         {% elif group.current_trip().progress == Progress.AWAITING_PARENT_CONFIMATION %}
-            {% if false %}
+            {% if group.current_trip().walker.id == user.id %}
                 <p class="text-muted lead">
                     All parents in group {{ group.name }} have been notified, waiting for confirmation.
                 </p>
