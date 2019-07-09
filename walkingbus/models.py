@@ -37,6 +37,12 @@ trip_assoc = Table(
     Column('trip_id', Integer, ForeignKey('trip.id')),
 )
 
+trip_assoc2 = Table(
+    'trip_assoc2',
+    Column('child_id', Integer, ForeignKey('child.id')),
+    Column('trip_id', Integer, ForeignKey('trip.id')),
+)
+
 
 class Progress(object):
 
@@ -98,6 +104,7 @@ class Trip(Model):
     start_time = Column(DateTime, nullable=True)
     group_id = Column(Integer, ForeignKey('group.id'), nullable=False)
     participants = relationship('Child', secondary=trip_assoc, backref=backref('trips', lazy='dynamic'))
+    passengers = relationship('Child', secondary=trip_assoc2, backref=backref('_trips', lazy='dynamic'))
     walker_id = Column(Integer, ForeignKey('parent.id'), nullable=False)
     progress = Column(Integer, nullable=False, default=Progress.AWAITING_WALKER)
 

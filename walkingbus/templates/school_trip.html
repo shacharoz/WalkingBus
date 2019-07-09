@@ -26,11 +26,11 @@
         {% elif group.current_trip().progress == Progress.AWAITING_PARENT_CONFIMATION %}
             {% if group.current_trip().walker.id == user.id %}
                 <p class="text-muted lead">
-                    All parents in group {{ group.name }} have been notified, waiting for confirmation.
+                    All parents in group {{ group.name }} have been notified, click start when you start the walk.
                 </p>
-                <p class="text-muted lead">
-                    You will receive a notification when they have decided.
-                </p>
+                <form method="post">
+                    <input type="submit" value="START">
+                </form>
             {% else %}
                 <p class="text-muted lead">
                     {{ group.current_trip().walker.fullname }} (group {{ group.name }}) is leaving soon to school {{ group.school.name }}.
@@ -38,19 +38,35 @@
                 <p class="text-muted lead">
                     Will your children join him today?
                 </p>
-                <div class="selection">
-                    <form method="post">
-                        {% for child in children %}
-                            <label>{{ child.fullname }}</label>
-                            <input type="checkbox" name="{{ child.username }}">
-                        {% endfor %}
-                        <input type="submit" value="Submit">
-                    </form>
-                </div>
+                <form method="post">
+                    {% for child in children %}
+                        <input type="checkbox" name="{{ child.username }}">
+                        <label>{{ child.fullname }}</label>
+                    {% endfor %}
+                    <input type="submit" value="Submit">
+                </form>
             {% endif %}
         {% elif group.current_trip().progress == Progress.WALK_STARTED %}
             {% if group.current_trip().walker.id == user.id %}
+                <p class="text-muted lead">
+                    Here's a list of the kids that will join you today, confirm their presence when they join you.
+                </p>
+                <form method="post">
+                    {% for participant in group.current_trip().participants %}
+                        <input type="checkbox" name="{{ participant.username }}">
+                        <label>{{ participant.fullname }}</label>
+                    {% endfor %}
+                    <input type="submit" value="Update">
+                </form>
             {% else %}
+                {% for child in children %}
+                    {% if child in (group.current_trip().passengers) %}
+                        <input type="checkbox" name="{{ child.username }}" disabled checked>
+                    {% else %}
+                        <input type="checkbox" name="{{ child.username }}" disabled>
+                    {% endif %}
+                    <label>{{ child.fullname }}</label>
+                {% endfor %}
             {% endif %}
         {% elif group.current_trip().progress == Progress.WALK_FINISHED %}
             {% if group.current_trip().walker.id == user.id %}

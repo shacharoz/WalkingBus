@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, redirect, flash, request, url_for, render_template
 from flask_login import LoginManager
 from flask_sqlalchemy import Model as BaseModel
@@ -5,6 +7,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
 from .config import FlaskConfig
+
+
+def json_default(obj):
+    if hasattr(obj, 'tojson'):
+        return obj.tojson()
+    else:
+        raise TypeError(f'Object of type {obj.__class__.__name__} '
+                        f'is not JSON serializable')
 
 
 class ModelMixin(BaseModel):
@@ -25,6 +35,9 @@ class ModelMixin(BaseModel):
         serializable = {}
         for name in dir(self):
             attr = getattr(self, name)
+            if isinstance(attr, ModelMixin) or (any(isinstance(item, ModelMixin) for item in attr) if isinstance(attr, list) else False):
+                serializable[name] = getattr(attr, 'id')
+                continue
             if not name.startswith('_') and (isinstance(attr, str) or isinstance(attr, int) or 
                isinstance(attr, float) or isinstance(attr, bool) or isinstance(attr, dict) or 
                isinstance(attr, list) or hasattr(attr, 'tojson') or attr is None):
@@ -47,6 +60,9 @@ class ModelMixin(BaseModel):
         db.session.delete(self)
         if commit:
             self.commit()
+    
+    # def __repr__(self):
+    #     return json.dumps(self.tojson(), default=json_default)
 
 
 app = Flask(__name__, static_folder='assets')

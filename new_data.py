@@ -29,5 +29,3 @@ child1.groups.append(group1)
 
 db.session.add(child1)
 db.session.commit()
-
-group1.new_trip(walker=parent1)
