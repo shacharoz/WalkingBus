@@ -22,6 +22,11 @@
                 <p class="text-muted lead">
                     You will receive a notification when the walker is ready.
                 </p>
+                <script>
+                    setInterval(function () {
+                        refresh(+'{{ group.current_trip().progress }}');
+                    }, 5000);
+                </script>
             {% endif %}
         {% elif group.current_trip().progress == Progress.AWAITING_PARENT_CONFIMATION %}
             {% if group.current_trip().walker.id == user.id %}
@@ -35,6 +40,11 @@
                 <form method="post">
                     <input type="submit" value="START">
                 </form>
+                <script>
+                    setInterval(function () {
+                        document.location.reload();
+                    }, 5000);
+                </script>
             {% else %}
                 <p class="text-muted lead">
                     {{ group.current_trip().walker.fullname }} (group {{ group.name }}) is leaving soon to school {{ group.school.name }}.
@@ -42,12 +52,11 @@
                 <p class="text-muted lead">
                     Will your children join him today?
                 </p>
-                <form method="post">
+                <form method="post" id="participants">
                     {% for child in children %}
-                        <input type="checkbox" name="{{ child.username }}">
+                        <input type="checkbox" name="{{ child.username }}" oninput="updateParticipants();">
                         <label>{{ child.fullname }}</label>
                     {% endfor %}
-                    <input type="submit" value="Submit">
                 </form>
             {% endif %}
         {% elif group.current_trip().progress == Progress.WALK_STARTED %}
@@ -114,3 +123,6 @@
         {% endif %}
     </div>
 {% endblock main %}
+{% block script %}
+    <script src="{{ url_for('static', filename='js/school_trip.js') }}"></script>
+{% endblock script %}

@@ -38,9 +38,17 @@ def school_trip(id):
                 for participant in group.current_trip().participants:
                     if request.form.get(participant.username):
                         group.current_trip().passengers.append(participant)
+                    else:
+                        group.current_trip().passengers.remove(participant)
                 if request.form.get('finish'):
                     group.current_trip().progress = Progress.WALK_FINISHED
                 db.session.commit()
         elif group.current_trip().progress == Progress.WALK_FINISHED:
             pass
     return render_template('school_trip.html', user=user, group=group, Progress=Progress, children=children)
+
+
+@app.route('/api/progress')
+def api_progress():
+    group = Group.query.first()
+    return jsonify({ 'progress': group.current_trip().progress }), 200
