@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from . import app, db, Child, Parent, Group, Progress
 
@@ -17,7 +17,7 @@ def school_trip(id):
     children = Child.query.filter(Child.parents.contains(user), Child.groups.contains(group)).all()
     # TODO: not final version, this is just a temporary workaround.
     # we should call 'Group.new_trip()' when a parent volunteers to be walker.
-    if (not group.current_trip() or group.current_trip().progress == Progress.WALK_FINISHED):
+    if not group.current_trip() or (group.current_trip().progress == Progress.WALK_FINISHED and datetime.utcnow() - group.current_trip().start_time > timedelta(hours=12)):
         group.new_trip(walker_id=Parent.query.first().id)
 
     if request.method == 'POST':
@@ -36,8 +36,10 @@ def school_trip(id):
         elif group.current_trip().progress == Progress.WALK_STARTED:
             if group.current_trip().walker.id == user.id:
                 for participant in group.current_trip().participants:
-                    if bool(request.form.get(participant.username)):
+                    if request.form.get(participant.username):
                         group.current_trip().passengers.append(participant)
+                if request.form.get('finish'):
+                    group.current_trip().progress = Progress.WALK_FINISHED
                 db.session.commit()
         elif group.current_trip().progress == Progress.WALK_FINISHED:
             pass

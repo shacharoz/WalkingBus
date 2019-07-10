@@ -76,7 +76,11 @@ hr {
   display: block;
   max-width: 50rem;
   width: 80%;
-  text-align: center;
+  /* text-align: center; */
   margin: auto;
   margin-top: 2rem;
+}
+
+.container-primary h1 {
+  text-align: center;
 }

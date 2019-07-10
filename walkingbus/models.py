@@ -58,11 +58,10 @@ class User(object):
     username = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
     fullname = Column(String, nullable=False)
-
+    address = Column(String, nullable=False)
 
 class Parent(User, Model):
 
-    address = Column(String, nullable=False)
     trip = relationship('Trip', uselist=False, backref='walker')
 
 
