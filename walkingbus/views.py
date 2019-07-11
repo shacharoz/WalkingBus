@@ -38,7 +38,7 @@ def school_trip(id):
                 for participant in group.current_trip().participants:
                     if request.form.get(participant.username):
                         group.current_trip().passengers.append(participant)
-                    else:
+                    elif participant in group.current_trip().passengers:
                         group.current_trip().passengers.remove(participant)
                 if request.form.get('finish'):
                     group.current_trip().progress = Progress.WALK_FINISHED

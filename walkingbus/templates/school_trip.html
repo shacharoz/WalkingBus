@@ -38,10 +38,11 @@
                     <label>{{ participant.fullname }}</label>
                 {% endfor %}
                 <form method="post">
-                    <input type="submit" value="START">
+                    <input type="submit" value="START" class="btn btn-primary">
                 </form>
                 <script>
                     setInterval(function () {
+                        window.history.replaceState(null, null, window.location.href);
                         document.location.reload();
                     }, 5000);
                 </script>
@@ -58,21 +59,25 @@
                         <label>{{ child.fullname }}</label>
                     {% endfor %}
                 </form>
+                <script>
+                    setInterval(function () {
+                        refresh(+'{{ group.current_trip().progress }}');
+                    }, 5000);
+                </script>
             {% endif %}
         {% elif group.current_trip().progress == Progress.WALK_STARTED %}
             {% if group.current_trip().walker.id == user.id %}
                 <p class="text-muted lead">
                     Here's a list of the kids that will join you today, confirm their presence when they join you.
                 </p>
-                <form method="post">
+                <form method="post" id="passengers">
                     {% for participant in group.current_trip().participants %}
                         <div>
-                            <label><input type="checkbox" name="{{ participant.username }}">{{ participant.address }} ({{ participant.fullname }})</label>
+                            <label><input type="checkbox" name="{{ participant.username }}" oninput="updatePassengers();">{{ participant.address }} ({{ participant.fullname }})</label>
                         </div>
                     {% endfor %}
-                    <input type="checkbox" name="finish">
+                    <input type="checkbox" name="finish" oninput="(async function () {await updatePassengers();window.history.replaceState(null, null, window.location.href);document.location.reload();})()">
                     <label>{{ group.school.address }} ({{ group.school.name }})</label>
-                    <input type="submit" value="Update">
                 </form>
             {% else %}
                 <p class="text-muted lead">
@@ -92,6 +97,12 @@
                 {% endfor %}
                 <input type="checkbox" name="finish" disabled>
                 <label>{{ group.school.address }} ({{ group.school.name }})</label>
+                <script>
+                    setInterval(function () {
+                        window.history.replaceState(null, null, window.location.href);
+                        document.location.reload();
+                    }, 5000);
+                </script>
             {% endif %}
         {% elif group.current_trip().progress == Progress.WALK_FINISHED %}
             {% if group.current_trip().walker.id == user.id %}
