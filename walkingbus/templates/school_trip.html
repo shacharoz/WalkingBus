@@ -1,139 +1,178 @@
 {% extends "layout.html" %}
 {% block main %}
-    <h1>Good Morning {{ user.username }}, </h1>
-    <hr>
-    <div class="content">
-        {% if group.current_trip().progress == Progress.AWAITING_WALKER %}
-            {% if group.current_trip().walker.id == user.id %}
-                <p class="text-muted lead">
-                    You are WALKING the kids today for group {{ group.name }} to school {{ group.school.name }}.
-                </p> 
-                <form method="post">
-                    <input type="hidden" name="start" value="true">
-                    <input class="btn btn-success" type="submit" value="READY!">
-                </form>
-                <p class="text-muted lead">
-                    Notify parents when you are ready.
-                </p>
-            {% else %}
-                <p class="text-muted lead">
-                    Today {{ group.current_trip().walker.fullname }} is walking the kids to school {{ group.school.name }} for group {{ group.name }}, but he's not ready yet.
-                </p>
-                <p class="text-muted lead">
-                    You will receive a notification when the walker is ready.
-                </p>
-                <script>
-                    setInterval(function () {
-                        refresh(+'{{ group.current_trip().progress }}');
-                    }, 5000);
-                </script>
-            {% endif %}
-        {% elif group.current_trip().progress == Progress.AWAITING_PARENT_CONFIMATION %}
-            {% if group.current_trip().walker.id == user.id %}
-                <p class="text-muted lead">
-                    All parents in group {{ group.name }} have been notified, here's a list of the children who have already decided to join you, click start when you start the walk.
-                </p>
-                {% for participant in group.current_trip().participants %}
-                    <input type="checkbox" name="{{ participant.username }}">
-                    <label>{{ participant.fullname }}</label>
-                {% endfor %}
-                <form method="post">
-                    <input type="submit" value="START" class="btn btn-primary">
-                </form>
-                <script>
-                    setInterval(function () {
-                        window.history.replaceState(null, null, window.location.href);
-                        document.location.reload();
-                    }, 5000);
-                </script>
-            {% else %}
-                <p class="text-muted lead">
-                    {{ group.current_trip().walker.fullname }} (group {{ group.name }}) is leaving soon to school {{ group.school.name }}.
-                </p>
-                <p class="text-muted lead">
-                    Will your children join him today?
-                </p>
-                <form method="post" id="participants">
-                    {% for child in children %}
-                        <input type="checkbox" name="{{ child.username }}" oninput="updateParticipants();">
-                        <label>{{ child.fullname }}</label>
-                    {% endfor %}
-                </form>
-                <script>
-                    setInterval(function () {
-                        refresh(+'{{ group.current_trip().progress }}');
-                    }, 5000);
-                </script>
-            {% endif %}
-        {% elif group.current_trip().progress == Progress.WALK_STARTED %}
-            {% if group.current_trip().walker.id == user.id %}
-                <p class="text-muted lead">
-                    Here's a list of the kids that will join you today, confirm their presence when they join you.
-                </p>
-                <form method="post" id="passengers">
-                    {% for participant in group.current_trip().participants %}
-                        <div>
-                            <label><input type="checkbox" name="{{ participant.username }}" oninput="updatePassengers();">{{ participant.address }} ({{ participant.fullname }})</label>
-                        </div>
-                    {% endfor %}
-                    <input type="checkbox" name="finish" oninput="(async function () {await updatePassengers();window.history.replaceState(null, null, window.location.href);document.location.reload();})()">
-                    <label>{{ group.school.address }} ({{ group.school.name }})</label>
-                </form>
-            {% else %}
-                <p class="text-muted lead">
-                    Walk started!
-                </p>
-                {% for child in children %}
-                    {% if child in group.current_trip().participants %}
-                        <div>
-                            {% if child in (group.current_trip().passengers) %}
-                                <input type="checkbox" name="{{ child.username }}" disabled checked>
-                            {% else %}
-                                <input type="checkbox" name="{{ child.username }}" disabled>
-                            {% endif %}
-                            <label>{{ child.fullname }}</label>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-                <input type="checkbox" name="finish" disabled>
-                <label>{{ group.school.address }} ({{ group.school.name }})</label>
-                <script>
-                    setInterval(function () {
-                        window.history.replaceState(null, null, window.location.href);
-                        document.location.reload();
-                    }, 5000);
-                </script>
-            {% endif %}
-        {% elif group.current_trip().progress == Progress.WALK_FINISHED %}
-            {% if group.current_trip().walker.id == user.id %}
-                <p class="text-muted lead">
-                    Walk finished!
-                </p>
-                {% for participant in group.current_trip().participants %}
-                    <div>
-                        <label><input type="checkbox" name="{{ participant.username }}" disabled checked> {{ participant.address }} ({{ participant.fullname }})</label>
-                    </div>
-                {% endfor %}
-                <input type="checkbox" name="finish" disabled checked>
-                <label>{{ group.school.address }} ({{ group.school.name }})</label>
-            {% else %}
-                <p class="text-muted lead">
-                    Walk finished!
-                </p>
-                {% for child in children %}
-                    {% if child in group.current_trip().participants %}
-                        <div>
-                            <input type="checkbox" name="{{ child.username }}" disabled checked>
-                            <label>{{ child.fullname }}</label>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-                <input type="checkbox" name="finish" disabled checked>
-                <label>{{ group.school.address }} ({{ group.school.name }})</label>
-            {% endif %}
-        {% endif %}
+<div class="content">
+    {% if group.current_trip().progress == Progress.AWAITING_WALKER %}
+    {% if group.current_trip().walker.id == user.id %}
+    <div class="row">
+        <div class="col-lg-10 col-offset-1">
+            <p class="text-muted lead">
+                Good Morning {{ user.username }},
+                you are WALKING the kids today for group {{ group.name }} to school {{ group.school.name }}.
+            </p>
+            <hr>
+            <p class="text-muted lead">
+                Notify parents when you are ready.
+            </p>
+
+            <form method="post">
+                <input class="btn btn-success btn-lg btn-block" type="submit" value="READY!">
+            </form>
+        </div>
     </div>
+    {% else %}
+    <div class="row">
+        <div class="col-lg-10 col-offset-1">
+            <p class="text-muted lead">
+                Good Morning {{ user.username }},
+                Today {{ group.current_trip().walker.fullname }} is walking the kids to school {{ group.school.name }}
+                for group {{ group.name }}, but he's not ready yet.
+            </p>
+            <hr>
+            <p class="text-muted lead">
+                You will receive a notification when the walker is ready.
+            </p>
+        </div>
+    </div>
+    <script>
+        setInterval(function () {
+            refresh(+'{{ group.current_trip().progress }}');
+        }, 3000);
+    </script>
+    {% endif %}
+    {% elif group.current_trip().progress == Progress.AWAITING_PARENT_CONFIMATION %}
+    {% if group.current_trip().walker.id == user.id %}
+    <div class="col-lg-10 col-offset-1">
+        <h4>Participants</h4>
+        <hr>
+        <div class="card-deck">
+            {% for participant in group.current_trip().participants %}
+            <div class="card" style="max-width: 11rem;min-width: 11rem;">
+                <img src="{{ url_for('static', filename='img/placeholder.png') }}" class="card-img-top"
+                    alt="{{ participant.fullname }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ participant.fullname }}</h5>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <form method="post">
+            <input type="submit" value="START" class="btn btn-primary btn-lg btn-block">
+        </form>
+    </div>
+    <script>
+        setInterval(function () {
+            window.history.replaceState(null, null, window.location.href);
+            document.location.reload();
+        }, 3000);
+    </script>
+    {% else %}
+    <p class="text-muted lead">
+        {{ group.current_trip().walker.fullname }} (group {{ group.name }}) is leaving soon to school
+        {{ group.school.name }}.
+    </p>
+    <p class="text-muted lead">
+        Will your children join him today?
+    </p>
+    <form method="post" id="participants">
+        <div class="card-deck">
+            {% for child in children %}
+            <div class="card" style="max-width: 11rem;min-width: 11rem;">
+                <img src="{{ url_for('static', filename='img/placeholder.png') }}" class="card-img-top" alt="{{ child.fullname }}">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {{ child.fullname }}
+                    </h5>
+                    <label class="switch">
+                        <input type="checkbox" name="{{ child.username }}" oninput="console.log('test');updateParticipants();">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </form>
+    <script>
+        setInterval(function () {
+            refresh(+'{{ group.current_trip().progress }}');
+        }, 3000);
+    </script>
+    {% endif %}
+    {% elif group.current_trip().progress == Progress.WALK_STARTED %}
+    {% if group.current_trip().walker.id == user.id %}
+    <p class="text-muted lead">
+        Here's a list of the kids that will join you today, confirm their presence when they join you.
+    </p>
+    <form method="post" id="passengers">
+        {% for participant in group.current_trip().participants %}
+        <div>
+            <label>
+                <input type="checkbox" name="{{ participant.username }}" oninput="updatePassengers();">
+                {{ participant.address }} ({{ participant.fullname }})
+            </label>
+        </div>
+        {% endfor %}
+        <label>
+            <input type="checkbox" name="finish"
+                oninput="(async function () {await updatePassengers();window.history.replaceState(null, null, window.location.href);document.location.reload();})()">
+            {{ group.school.address }} ({{ group.school.name }})
+        </label>
+    </form>
+    {% else %}
+    <p class="text-muted lead">
+        Walk started!
+    </p>
+    {% for child in children %}
+    {% if child in group.current_trip().participants %}
+    <div>
+        {% if child in (group.current_trip().passengers) %}
+        <input type="checkbox" name="{{ child.username }}" disabled checked>
+        {% else %}
+        <input type="checkbox" name="{{ child.username }}" disabled>
+        {% endif %}
+        <label>{{ child.fullname }}</label>
+    </div>
+    {% endif %}
+    {% endfor %}
+    <input type="checkbox" name="finish" disabled>
+    <label>{{ group.school.address }} ({{ group.school.name }})</label>
+    <script>
+        setInterval(function () {
+            window.history.replaceState(null, null, window.location.href);
+            document.location.reload();
+        }, 3000);
+    </script>
+    {% endif %}
+    {% elif group.current_trip().progress == Progress.WALK_FINISHED %}
+    {% if group.current_trip().walker.id == user.id %}
+    <p class="text-muted lead">
+        Walk finished!
+    </p>
+    {% for participant in group.current_trip().participants %}
+    <div>
+        <label><input type="checkbox" name="{{ participant.username }}" disabled checked> {{ participant.address }}
+            ({{ participant.fullname }})</label>
+    </div>
+    {% endfor %}
+    <input type="checkbox" name="finish" disabled checked>
+    <label>{{ group.school.address }} ({{ group.school.name }})</label>
+    {% else %}
+    <p class="text-muted lead">
+        Walk finished!
+    </p>
+    {% for child in children %}
+    {% if child in group.current_trip().participants %}
+    <div>
+        <input type="checkbox" name="{{ child.username }}" disabled checked>
+        <label>{{ child.fullname }}</label>
+    </div>
+    {% endif %}
+    {% endfor %}
+    <input type="checkbox" name="finish" disabled checked>
+    <label>{{ group.school.address }} ({{ group.school.name }})</label>
+    {% endif %}
+    {% endif %}
+</div>
 {% endblock main %}
 {% block script %}
-    <script src="{{ url_for('static', filename='js/school_trip.js') }}"></script>
+<script src="{{ url_for('static', filename='js/school_trip.js') }}"></script>
 {% endblock script %}
