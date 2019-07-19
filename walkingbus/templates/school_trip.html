@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-lg-10 col-offset-1">
             <p class="text-muted lead">
-                Good Morning {{ user.username }},
+                Good Morning {{ user.fullname }},
                 you are WALKING the kids today for group {{ group.name }} to school {{ group.school.name }}.
             </p>
             <hr>
@@ -23,7 +23,7 @@
     <div class="row">
         <div class="col-lg-10 col-offset-1">
             <p class="text-muted lead">
-                Good Morning {{ user.username }},
+                Good Morning {{ user.fullname }},
                 Today {{ group.current_trip().walker.fullname }} is walking the kids to school {{ group.school.name }}
                 for group {{ group.name }}, but he's not ready yet.
             </p>
@@ -44,17 +44,29 @@
     <div class="col-lg-10 col-offset-1">
         <h4>Participants</h4>
         <hr>
-        <div class="card-deck">
-            {% for participant in group.current_trip().participants %}
-            <div class="card" style="max-width: 11rem;min-width: 11rem;">
-                <img src="{{ url_for('static', filename='img/placeholder.png') }}" class="card-img-top"
-                    alt="{{ participant.fullname }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ participant.fullname }}</h5>
+        <div class="py-3">
+            <div class="container">
+                <div class="row">
+                    {% for child in group.current_trip().participants %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h4>{{ child.fullname }}</h4>
+                            </div>
+                            <div class="card-image">
+                                <img src="{{ url_for('static', filename='img/placeholder.png') }}" alt="{{ child.fullname }}">
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
-            {% endfor %}
         </div>
+        {% if group.current_trip().participants|length == 0 %}
+        <p class="text-muted lead">
+            No kids have joined you yet.
+        </p>
+        {% endif %}
         <form method="post">
             <input type="submit" value="START" class="btn btn-primary btn-lg btn-block">
         </form>
@@ -74,21 +86,26 @@
         Will your children join him today?
     </p>
     <form method="post" id="participants">
-        <div class="card-deck">
-            {% for child in children %}
-            <div class="card" style="max-width: 11rem;min-width: 11rem;">
-                <img src="{{ url_for('static', filename='img/placeholder.png') }}" class="card-img-top" alt="{{ child.fullname }}">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        {{ child.fullname }}
-                    </h5>
-                    <label class="switch">
-                        <input type="checkbox" name="{{ child.username }}" oninput="console.log('test');updateParticipants();">
-                        <span class="switch-slider"></span>
-                    </label>
+        <div class="py-3">
+            <div class="container">
+                <div class="row">
+                    {% for child in children %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <label>
+                                    <h3 class="float-left">{{ child.fullname }}</h3>
+                                    <input class="checkbox" type="checkbox" name="{{ child.username }}" oninput="updateParticipants();">
+                                </label>
+                            </div>
+                            <div class="card-image">
+                                <img src="{{ url_for('static', filename='img/placeholder.png') }}" alt="{{ child.fullname }}">
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
-            {% endfor %}
         </div>
     </form>
     <script>
