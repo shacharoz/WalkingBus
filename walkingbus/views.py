@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from . import app, db, Child, Parent, Group, Progress
 
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, abort
 
 
 @app.route('/')
@@ -32,6 +32,8 @@ def school_trip(id):
                 for child in children:
                     if request.form.get(child.username):
                         group.current_trip().participants.append(child)
+                    elif child in group.current_trip().participants:
+                        group.current_trip().participants.remove(child)
                 db.session.commit()
         elif group.current_trip().progress == Progress.WALK_STARTED:
             if group.current_trip().walker.id == user.id:
@@ -51,4 +53,7 @@ def school_trip(id):
 @app.route('/api/progress')
 def api_progress():
     group = Group.query.first()
-    return jsonify({ 'progress': group.current_trip().progress }), 200
+    if group.current_trip():
+        return jsonify({ 'progress': group.current_trip().progress }), 200
+    else:
+        return abort(404)
