@@ -30,7 +30,7 @@ def school_trip(id):
                 db.session.commit()
             else:
                 for child in children:
-                    if request.form.get(child.username):
+                    if request.form.get(child.username) and (child not in group.current_trip().participants):
                         group.current_trip().participants.append(child)
                     elif child in group.current_trip().participants:
                         group.current_trip().participants.remove(child)
@@ -38,7 +38,7 @@ def school_trip(id):
         elif group.current_trip().progress == Progress.WALK_STARTED:
             if group.current_trip().walker.id == user.id:
                 for participant in group.current_trip().participants:
-                    if request.form.get(participant.username):
+                    if request.form.get(participant.username) and (participant not in group.current_trip().passengers):
                         group.current_trip().passengers.append(participant)
                     elif participant in group.current_trip().passengers:
                         group.current_trip().passengers.remove(participant)

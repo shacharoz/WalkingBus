@@ -48,13 +48,14 @@
             <div class="container">
                 <div class="row">
                     {% for child in group.current_trip().participants %}
-                    <div class="col-md-4">
+                    <div class="col-md-4 col-xs-4">
                         <div class="card mb-4 shadow-sm">
                             <div class="card-body">
                                 <h4>{{ child.fullname }}</h4>
                             </div>
                             <div class="card-image">
-                                <img src="{{ url_for('static', filename='img/placeholder.png') }}" alt="{{ child.fullname }}">
+                                <img src="{{ url_for('static', filename='img/placeholder.png') }}"
+                                    alt="{{ child.fullname }}">
                             </div>
                         </div>
                     </div>
@@ -90,18 +91,21 @@
             <div class="container">
                 <div class="row">
                     {% for child in children %}
-                    <div class="col-md-4">
-                        <div class="card mb-4 shadow-sm">
-                            <div class="card-body">
-                                <label>
+                    <div class="col-sm-4">
+                        <label>
+                            <div class="card mb-4 shadow-sm profile-card normal-bg">
+                                <div class="card-body">
                                     <h3 class="float-left">{{ child.fullname }}</h3>
-                                    <input class="checkbox" type="checkbox" name="{{ child.username }}" oninput="updateParticipants();">
-                                </label>
+
+                                </div>
+                                <div class="card-image">
+                                    <img src="{{ url_for('static', filename='img/placeholder.png') }}"
+                                        alt="{{ child.fullname }}">
+                                </div>
+                                <input class="checkbox" type="checkbox" name="{{ child.username }}"
+                                    onchange="updateParticipants();changeBG(this);">
                             </div>
-                            <div class="card-image">
-                                <img src="{{ url_for('static', filename='img/placeholder.png') }}" alt="{{ child.fullname }}">
-                            </div>
-                        </div>
+                        </label>
                     </div>
                     {% endfor %}
                 </div>
@@ -192,4 +196,5 @@
 {% endblock main %}
 {% block script %}
 <script src="{{ url_for('static', filename='js/school_trip.js') }}"></script>
+<script src="{{ url_for('static', filename='js/trip_frontend.js') }}"></script>
 {% endblock script %}
