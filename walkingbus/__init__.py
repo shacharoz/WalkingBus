@@ -35,7 +35,7 @@ class ModelMixin(BaseModel):
         serializable = {}
         for name in dir(self):
             attr = getattr(self, name)
-            if isinstance(attr, ModelMixin) or (any(isinstance(item, ModelMixin) for item in attr) if isinstance(attr, list) else False):
+            if isinstance(attr, ModelMixin):
                 serializable[name] = getattr(attr, 'id')
                 continue
             if not name.startswith('_') and (isinstance(attr, str) or isinstance(attr, int) or 
