@@ -42,7 +42,7 @@ label {
 .header .nav-left {
   float: left;
   list-style: none;
-  display: flex;
+  /*display: flex;*/
   flex-direction: row;
   margin-left: 1rem;
 }
@@ -139,17 +139,40 @@ label .checkbox {
   margin-left: 0;
 }
 
-@media (min-width: 768px) {
-  #sidebar-wrapper {
-    margin-left: 0;
-  }
+#sidebar-wrapper {
+  position: fixed;
+  margin-left: 0;
+}
 
-  #page-content-wrapper {
-    min-width: 0;
-    width: 100%;
-  }
+#page-content-wrapper {
+  -webkit-transition: margin .25s ease-out;
+  -moz-transition: margin .25s ease-out;
+  -o-transition: margin .25s ease-out;
+  transition: margin .25s ease-out;
+  min-width: 0;
+  width: 100%;
+  margin-top: 4rem;
+}
 
-  #wrapper.toggled #sidebar-wrapper {
-    margin-left: -15rem;
-  }
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: -15rem;
+}
+
+#wrapper.toggled #page-content-wrapper {
+  margin-left: 0;
+}
+
+#wrapper #page-content-wrapper {
+  margin-left: 15rem;
+}
+
+.navbar-expand-lg .navbar-toggler {
+  display: block !important;
+}
+
+.navbar {
+  position: fixed;
+  justify-content: unset !important;
+  padding-left: 1rem;
+  width: 100%;
 }

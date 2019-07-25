@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from enum import IntEnum
 
+from flask_login import UserMixin
+
 from walkingbus import db
 
 
@@ -52,7 +54,7 @@ class Progress(object):
     WALK_FINISHED = 3
 
 
-class User(object):
+class User(UserMixin):
 
     id = Column(Integer, primary_key=True)
     username = Column(String, nullable=False, unique=True)

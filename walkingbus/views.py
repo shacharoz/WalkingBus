@@ -1,8 +1,16 @@
 from datetime import datetime, timedelta
+from os import path
 
-from . import app, db, Child, Parent, Group, Progress
+from . import app, db, login_manager, LoginForm, RegistrationForm, UpdateForm, bcrypt, Child, Parent, Group, Progress
 
-from flask import render_template, request, jsonify, abort
+from flask import render_template, request, jsonify, abort, redirect, flash
+from flask_login import login_user, current_user, login_required
+from werkzeug.utils import secure_filename
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Parent.query.get(int(user_id))
 
 
 @app.route('/')
@@ -48,6 +56,53 @@ def school_trip(id):
         elif group.current_trip().progress == Progress.WALK_FINISHED:
             pass
     return render_template('school_trip.html', user=user, group=group, Progress=Progress, children=children)
+
+@app.route('/sign-up', methods=['GET', 'POST'])
+def sign_up():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        parent = Parent(username=form.username.data, fullname=form.fullname.data, address=form.address.data, password=bcrypt.generate_password_hash(form.password.data))
+        db.session.add(parent)
+        db.session.commit()
+        login_user(parent)
+        return redirect('/')
+    return render_template('sign_up.html', form=form)
+
+
+@app.route('/sign-in', methods=['GET', 'POST'])
+def sign_in():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Parent.query.filter_by(username=form.username.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, form.remember.data)
+            flash('Login successful.', 'success')
+            return redirect('/')
+        else:
+            flash('Invalid credentials, login failed!', 'danger')
+    return render_template('sign_in.html', form=form)
+
+
+@login_required
+@app.route('/account', methods=['GET', 'POST'])
+def account():
+    groups = []
+    for child in current_user.children:
+        print(groups)
+        groups.extend(child.groups)
+    groups = set(groups)
+    form = UpdateForm()
+    if form.validate_on_submit():
+        current_user.fullname = form.fullname.data
+        current_user.username = form.username.data
+        current_user.address = form.address.data
+        db.session.commit()
+        if form.picture.data:
+            f = form.picture.data
+            filename = secure_filename(current_user.username)
+            f.save(path.join('img', filename))
+        flash('Your account has been updated!', 'success')
+    return render_template('account.html', groups=groups, form=form)
 
 
 @app.route('/api/progress')

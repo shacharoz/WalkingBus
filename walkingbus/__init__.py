@@ -73,4 +73,5 @@ login_manager = LoginManager(app)
 bcrypt = Bcrypt(app)
 
 from .models import *
+from .forms import *
 from .views import *

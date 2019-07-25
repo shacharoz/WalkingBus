@@ -17,7 +17,7 @@
 </head>
 
 <body>
-  <div class="d-flex" id="wrapper">
+  <div class="d-flex toggled" id="wrapper">
     <div class="bg-light border-right" id="sidebar-wrapper">
       <div class="sidebar-heading">PediBus</div>
       <div class="list-group list-group-flush">
@@ -29,12 +29,23 @@
         <a href="#" class="list-group-item list-group-item-action bg-light">Status</a>
       </div>
     </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+      <button class="navbar-toggler" type="button" id="toggle">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <span>PEDIBUS</span>
+    </nav>
     <div id="page-content-wrapper">
-      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-        <button class="navbar-toggler" type="button" id="toggle">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      </nav>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">
+        {{ message }}
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+
       <main role="main">
         <div class="container container-primary">
           {% block main %}
